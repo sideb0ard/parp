@@ -1,0 +1,44 @@
+#container
+{
+    padding-top: 150px;
+
+}
+
+
+p {
+    color: #00FF00;
+
+}
+
+body
+{
+    text-align: center;
+}
+
+div#parp
+{
+    margin-left: auto;
+    margin-right: auto;
+    width: 780px; 
+    background: #FFFFFF;
+    margin: 0 auto; 
+    solid #000000;
+}
+
+
+#parput
+{
+    width: 690px; 
+    height: 100px; 
+    solid #999999; 
+    padding: 5px; 
+    font-size:300%;
+    text-align: center;
+}
+#parpbutton
+{
+    height: 50px; 
+    solid #999944; 
+    font-size:150%;
+    text-align: center;
+}
