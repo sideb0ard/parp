@@ -1,21 +1,22 @@
+<!DOCTYPE html>
+<!--
+ * Copyright (c) 2009 The Chromium Authors. All rights reserved.  Use of this
+ * source code is governed by a BSD-style license that can be found in the
+ * LICENSE file.
+-->
 <html>
-
-<header>
-    <title>Parp!</title>
+  <head>
     <link rel="stylesheet" type="text/css" href="parp.css">
-    <script language="javascript" type="text/javascript" src="parp.js"></script>
-    <script language="javascript" type="text/javascript" src="md5.js"></script>
-</header>
-
-<body>
-<div id="container">
-
+    <script type="text/javascript" src="json2.js"></script>
+    <script type="text/javascript" src="parp.js"></script>
+    <script type="text/javascript" src="md5.js"></script>
+  </head>
+  <body>
+    <div id="container">
     <div id="parp">
-            <input id="parput" type="text" onfocus="this.value=''" value="Enter Last.fm User Name"/></input><br/><br />
-            <button id="parpbutton" type="button" onclick="innit()">Parp!</button>
+        <input id="parput" type="text" onfocus="this.value=''" value="Enter Name"/></input><br/><br />
+        <button id="parpbutton" type="button" onclick="innit()">Parp!</button>
     </div>
-
-</div>
-</body>
-
+    </div>
+  </body>
 </html>
