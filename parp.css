@@ -26,7 +26,7 @@ div#parp
 }
 
 
-#parput
+#lusername
 {
     width: 690px; 
     height: 100px; 
@@ -42,3 +42,26 @@ div#parp
     font-size:150%;
     text-align: center;
 }
+
+    .chart {
+      margin-left: 42px;
+      font: 10px sans-serif;
+      shape-rendering: crispEdges;
+    }
+
+    .chart div {
+      background-color: steelblue;
+      text-align: right;
+      padding: 3px;
+      margin: 1px;
+      color: white;
+    }
+
+    .chart rect {
+      stroke: white;
+      fill: steelblue;
+    }
+
+    .chart text.bar {
+      fill: white;
+    }

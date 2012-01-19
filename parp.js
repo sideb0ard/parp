@@ -1,9 +1,12 @@
+var parpurl = "http://theb0ardside.com/parp/parp.html";
 var api_key = "api_key=14a64b148e0bb4256d1f863dfd9236da";
 var bare_api_key = "14a64b148e0bb4256d1f863dfd9236da";
 var ws="http://ws.audioscrobbler.com/2.0/?";
 //var authurl = "http://www.last.fm/api/auth/?"; // +  api_key + "&token=" + token;
 var authurl = "http://www.last.fm/api/auth/?" + api_key;
 var secret = "4223f602d29d7db54db9250309a6f9a6";
+var sessionKey;
+var luserName;
 
 // AJAX HANDLER AND CALLBACK
 var xreq = new XMLHttpRequest();
@@ -15,60 +18,51 @@ function xreqHandler(url,afunckd)
 }
 
 
-
 function innit()
 {
-
-    createCookie();
-    var luserName = readCookie('username')
-    //if  (luserName) {
-      //  var luserName = readCookie('username')
-       //alert("PARPPPPRPRPR! COOKIE SET - " + luserName);
-    //}
-
-    var sessionKey = readCookie('sessionKey')
-    if (sessionKey) {
-        document.getElementById("parp").innerHTML="PARP! -- top artists!";
-        showTopArtists(luserName);
+    if  (readCookie('username') && readCookie('sessionKey')) {
+        luserName = readCookie('username');
+        sessionKey = readCookie('sessionKey');
+        document.getElementById("parp")
+        .innerHTML=luserName + " all good bro, here's your charts<br><br>";
+        showTopArtists(luserName)
     }
-    else {
 
+    else if (getUrlVars()["token"]) {
         var token = getUrlVars()["token"];
-        if(typeof(token) !== 'undefined') {
-            var sessionKeyUrl = getSessionUrl(token);
-            // alert("Parp! - Session URL -- " + sessionKeyUrl + "!! ");
-    
-            xreqHandler(sessionKeyUrl, function()
-            {
-                if (xreq.readyState==4 && xreq.status==200) {
-                    var parser=new DOMParser();
-                    var xmlDoc=parser.parseFromString(xreq.responseText,"text/xml");
-                    var sessionKey = xmlDoc.getElementsByTagName("key")[0].childNodes[0].nodeValue;
-                    // alert("PARP!PARP! -- sessionKEY:: " + sessionKey);
-                    createSessionCookie(sessionKey);
-                }
-            });
-        }   
-        else {
-            // alert("Parp, no vars!");
-            window.location = authurl;
-        }
+        getSessionKey(token);
     }
-
+        
+    else {
+        document.getElementById("parp")
+        .innerHTML="<input id=\"lusername\" onfocus=\"this.value=''\" value=\"Enter Lastfm UserName\"/></input><br/><br/><button id=\"parpbutton\" type=\"button\" onclick=\"authMeBaby()\">pARP</button>";  
+    }
 }
 
-function showTopArtists(luserName) {
-    var artistLimit = 10;
-    var topArtistsQueryUrl = "http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&limit=" + artistLimit + "&user=" + luserName + "&api_key=" + bare_api_key;
-    xreqHandler(topArtistsQueryUrl, function()
-            {
-                if (xreq.readyState==4 && xreq.status==200) {
-                    var parser=new DOMParser();
-                    var xmlDoc=parser.parseFromString(xreq.responseText,"text/xml");
-                    var topArtists = xmlDoc.getElementsByTagName("artist")[0].childNodes[0].nodeValue;
-                    alert("PARP!PARP! -- topArtists:: " + xreq.responseText);
-                }
-            });
+
+function authMeBaby() {
+    luserName = document.getElementById('lusername').value;
+    createCookie('username',luserName);
+    window.location = authurl;
+}
+
+
+function getSessionKey(token) {
+    if(typeof(token) !== 'undefined') {
+        var sessionKeyUrl = getSessionUrl(token);
+    
+        xreqHandler(sessionKeyUrl, function()
+        {
+            if (xreq.readyState==4 && xreq.status==200) {
+                var parser=new DOMParser();
+                var xmlDoc=parser.parseFromString(xreq.responseText,"text/xml");
+                var sessionKey = xmlDoc.getElementsByTagName("key")[0].childNodes[0].nodeValue;
+                // alert("PARP!PARP! -- sessionKEY:: " + sessionKey);
+                createCookie('sessionKey',sessionKey);
+                window.location = parpurl;
+            }
+        });
+    }   
 }
 
 function createSessionCookie(sessionKey) {
@@ -84,13 +78,12 @@ function createSessionCookie(sessionKey) {
     }
     else var expires = "";
     document.cookie = name+"="+value+expires+"; path=/";
-    // alert("! SESSION COOKIE !! ");
 }
 
-function createCookie() {
+function createCookie(name,value) {
     
-    var name = "username";
-    var value = document.getElementById("parput").value;
+    var name = name;
+    var value = value;
     var days = 7;
     
     if (days) {
@@ -100,7 +93,6 @@ function createCookie() {
     }
     else var expires = "";
     document.cookie = name+"="+value+expires+"; path=/";
-    // alert("! COOKIE !! ");
 }
 
 function readCookie(name) {
@@ -128,25 +120,6 @@ function getTokenUrl()
     return url;
 }
 
-
-function authMeBaby(token)
-{
-    authurl = authurl + api_key + "&" + token;
-    window.open(authurl,"AuthBitch");
-    var sessionKeyUrl = getSessionUrl(token);
-    document.getElementById("parp").innerHTML="parped, Made it to authMeBaby -- SESH URL IIS!!" + sessionKeyUrl;
-
-    xreqHandler(sessionKeyUrl, function()
-        
-        {if (xreq.readyState==4)
-        //{if (xreq.readyState==4 && xreq.status==200)
-            {
-                //document.getElementById("parp").innerHTML="BOOP!parped, "+userName+"! -- SESSIONKEY RESPONSE  is " + xreq.responseText + "parp!";
-                document.getElementById("parp").innerHTML="BOOP!parped!" + "--" + sessionKeyUrl + " ! -- SESSIONKEY RESPONSE  is " + xreq.responseText + "parp!";
-            }
-        });
-}
-    
 function getSessionUrl(token)
 {
     var method = "method=auth.getSession";
@@ -163,17 +136,12 @@ function signShit(argz)
     // STAGE1 - ORDER PARAMS
     // alert("ARGSSS: " + argz);
     var sortedArgz = argz.sort();
-    //alert("SROTED ARGZZZ!" + sortedArgz);
     var sig='';
     for (t in sortedArgz)
     {
         sig += sortedArgz[t].replace(/=/g, "");
-        // alert("SIGLINE::" + sig);
     }
-    // STAGE 2 - APPEND SECRET
     sig += secret;
-    // alert("SIG!! " + sig);
-    // STAGE3 - MD5 THAT SHIT
     return hex_md5(sig);
 }
 
