@@ -1,9 +1,13 @@
-#container
+div#container
 {
-    padding-top: 150px;
-
+    padding-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 780px; 
+    background: #FFFFFF;
+    margin: 0 auto; 
+    solid #000000;
 }
-
 
 p {
     color: #00FF00;
@@ -13,16 +17,6 @@ p {
 body
 {
     text-align: center;
-}
-
-div#parp
-{
-    margin-left: auto;
-    margin-right: auto;
-    width: 780px; 
-    background: #FFFFFF;
-    margin: 0 auto; 
-    solid #000000;
 }
 
 
@@ -47,6 +41,7 @@ div#parp
       margin-left: 42px;
       font: 10px sans-serif;
       shape-rendering: crispEdges;
+      color: white;
     }
 
     .chart div {
@@ -60,6 +55,7 @@ div#parp
     .chart rect {
       stroke: white;
       fill: steelblue;
+      color: white;
     }
 
     .chart text.bar {

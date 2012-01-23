@@ -1,70 +1,3 @@
-var parpurl = "http://theb0ardside.com/parp/parp.html";
-var api_key = "api_key=14a64b148e0bb4256d1f863dfd9236da";
-var bare_api_key = "14a64b148e0bb4256d1f863dfd9236da";
-var ws="http://ws.audioscrobbler.com/2.0/?";
-//var authurl = "http://www.last.fm/api/auth/?"; // +  api_key + "&token=" + token;
-var authurl = "http://www.last.fm/api/auth/?" + api_key;
-var secret = "4223f602d29d7db54db9250309a6f9a6";
-var sessionKey;
-var luserName;
-
-// AJAX HANDLER AND CALLBACK
-var xreq = new XMLHttpRequest();
-function xreqHandler(url,afunckd)
-{
-    xreq.onreadystatechange=afunckd;
-    xreq.open("GET",url,true);
-    xreq.send();
-}
-
-
-function innit()
-{
-    if  (readCookie('username') && readCookie('sessionKey')) {
-        luserName = readCookie('username');
-        sessionKey = readCookie('sessionKey');
-        document.getElementById("parp")
-        .innerHTML=luserName + " all good bro, here's your charts<br><br>";
-        showTopArtists(luserName)
-    }
-
-    else if (getUrlVars()["token"]) {
-        var token = getUrlVars()["token"];
-        getSessionKey(token);
-    }
-        
-    else {
-        document.getElementById("parp")
-        .innerHTML="<input id=\"lusername\" onfocus=\"this.value=''\" value=\"Enter Lastfm UserName\"/></input><br/><br/><button id=\"parpbutton\" type=\"button\" onclick=\"authMeBaby()\">pARP</button>";  
-    }
-}
-
-
-function authMeBaby() {
-    luserName = document.getElementById('lusername').value;
-    createCookie('username',luserName);
-    window.location = authurl;
-}
-
-
-function getSessionKey(token) {
-    if(typeof(token) !== 'undefined') {
-        var sessionKeyUrl = getSessionUrl(token);
-    
-        xreqHandler(sessionKeyUrl, function()
-        {
-            if (xreq.readyState==4 && xreq.status==200) {
-                var parser=new DOMParser();
-                var xmlDoc=parser.parseFromString(xreq.responseText,"text/xml");
-                var sessionKey = xmlDoc.getElementsByTagName("key")[0].childNodes[0].nodeValue;
-                // alert("PARP!PARP! -- sessionKEY:: " + sessionKey);
-                createCookie('sessionKey',sessionKey);
-                window.location = parpurl;
-            }
-        });
-    }   
-}
-
 function showTopArtists(luserName) {
     var artistLimit = 10;
     var topArtistsQueryUrl = "http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&limit=" + artistLimit + "&user=" + luserName + "&api_key=" + bare_api_key + "&period=7day";
@@ -75,165 +8,56 @@ function showTopArtists(luserName) {
 
 					xmlDoc=xreq.responseXML; 
 					
+                    //alert(xreq.responseText);
+
                     var topArtists = [];
 					var x=xmlDoc.getElementsByTagName("artist");
 					for (i=0;i<x.length;i++)
 					  { 
-                      //topArtists.push(x[i].getElementsByTagName("name")[0].childNodes[0].nodeValue);  
-                      topArtists.push(x[i].getElementsByTagName("playcount")[0].childNodes[0].nodeValue);  
+                        var artistobj = "artist" + i;
+                        artistobj = new Object();
+                        artistobj.name=x[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
+                        artistobj.playcount=x[i].getElementsByTagName("playcount")[0].childNodes[0].nodeValue;
+                        if ( x[i].getElementsByTagName("mbid")[0].childNodes[0] != null ) {
+                            artistobj.mbid=x[i].getElementsByTagName("mbid")[0].childNodes[0].nodeValue;
+                        } else {
+                            artistobj.mbid="PARP!";
+                        }
+                        topArtists.push(artistobj);
 					  }
-                    document.getElementById("bodus").innerHTML= topArtists;
 
-                    var chart = d3.select("body").append("svg")
-                        .attr("class", "chart")
-                        .attr("width", 440)
-                        .attr("height", 140)
-                        .append("g")
-                        .attr("transform", "translate(10,15)");
+                        var w = 420,
+                            h = 200;
 
                         var x = d3.scale.linear()
-					     .domain([0, d3.max(topArtists)])
-					     .range([0, 420]);
-					
-					    var y = d3.scale.ordinal()
-					     .domain(topArtists)
-					     .rangeBands([0, 120]);
-					
-					    chart.selectAll("div")
-					     .data(topArtists)
-					   .enter().append("div")
-					     .style("width", x)
-					     .text(String);
+                        .domain([0,topArtists[0].playcount])
+                        .range([0, w]);
+
+                        var chart = d3.select("body").append("svg")
+                        .attr("class", "chart")
+                        .attr("width", 420)
+                        .attr("height", 20 * topArtists.length);
                         
-                         chart.selectAll("rect")
-					     .data(topArtists)
-					     .enter().append("rect")
-					     .attr("y", y)
-					     .attr("width", x)
-					     .attr("height", y.rangeBand());
+                        chart.selectAll("rect")
+                        .data(topArtists)
+                        .enter().append("rect")
+                        .attr("y", function(d, i) { return i * 20; })
+                        .attr("width", function(d) { return x(d.playcount) ; })
+                        .attr("height", 20);
 
-                         chart.selectAll("text")
-					     .data(topArtists)
-					     .enter().append("text")
-					     .attr("x", x)
-					     .attr("y", function(d) { return y(d) + y.rangeBand() / 2; })
-					     .attr("dx", -3) // padding-right
-					     .attr("dy", ".35em") // vertical-align: middle
-					     .attr("text-anchor", "end") // text-align: right
-					     .text(String);
-					
-					    chart.selectAll("line")
-					     .data(x.ticks(10))
-					     .enter().append("line")
-					     .attr("x1", x)
-					     .attr("x2", x)
-					     .attr("y1", 0)
-					     .attr("y2", 120)
-					     .style("stroke", "#ccc");
+                        chart.selectAll("text")
+                        .data(topArtists)
+						.enter().append("text")
+						.attr("x", function(d) { return x(d.playcount) ; })
+						.attr("y", function(d, i) { return i * 20 + 9;})
+						.attr("dx", -7) // padding-right
+						.attr("dy", ".35em") // vertical-align: middle
+						.attr("text-anchor", "end") // text-align: right
+                        .attr("fill", "white")
+						.text(function (d) { return d.name; });
 
-                         chart.selectAll(".rule")
-					     .data(x.ticks(10))
-					     .enter().append("text")
-					     .attr("class", "rule")
-					     .attr("x", x)
-					     .attr("y", 0)
-					     .attr("dy", -3)
-					     .attr("text-anchor", "middle")
-					     .text(String);
-					
-					 chart.append("line")
-					     .attr("y1", 0)
-					     .attr("y2", 120)
-					     .style("stroke", "#000");
+                        getGigs(topArtists);
 					
 		}
     });
-}
-
-function createSessionCookie(sessionKey) {
-    
-    var name = "sessionKey";
-    var value = sessionKey;
-    var days = 7;
-    
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime()+(days*24*60*60*1000));
-        var expires = "; expires="+date.toGMTString();
-    }
-    else var expires = "";
-    document.cookie = name+"="+value+expires+"; path=/";
-}
-
-function createCookie(name,value) {
-    
-    var name = name;
-    var value = value;
-    var days = 7;
-    
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime()+(days*24*60*60*1000));
-        var expires = "; expires="+date.toGMTString();
-    }
-    else var expires = "";
-    document.cookie = name+"="+value+expires+"; path=/";
-}
-
-function readCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
-}
-
-function eraseCookie(name) {
-    createCookie(name,"",-1);
-}
-
-
-function getTokenUrl()
-{
-    var method = "method=auth.getToken";
-    var myArgz = [api_key, method];
-    var api_sig = "api_sig=" + signShit(myArgz); 
-    var url = ws + method + "&" + api_key + "&" + api_sig;
-    return url;
-}
-
-function getSessionUrl(token)
-{
-    var method = "method=auth.getSession";
-    var tokenCall = "token=" + token;
-    var myArgz = [api_key, method, tokenCall];
-    var api_sig = "api_sig=" + signShit(myArgz); 
-    var url = ws + method + "&" + api_key + "&" + tokenCall + "&" + api_sig;
-    return url;
-}
-
-function signShit(argz)
-{
-    // :LASTFM SIGNING ALGO - 1. Order parameters. 2. Append secret 3. md5 hash the whole thing
-    // STAGE1 - ORDER PARAMS
-    // alert("ARGSSS: " + argz);
-    var sortedArgz = argz.sort();
-    var sig='';
-    for (t in sortedArgz)
-    {
-        sig += sortedArgz[t].replace(/=/g, "");
-    }
-    sig += secret;
-    return hex_md5(sig);
-}
-
-function getUrlVars() {
-    var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        vars[key] = value;
-    });
-    return vars;
 }

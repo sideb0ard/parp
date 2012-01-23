@@ -2,7 +2,6 @@ var parpurl = "http://theb0ardside.com/parp/parp.html";
 var api_key = "api_key=14a64b148e0bb4256d1f863dfd9236da";
 var bare_api_key = "14a64b148e0bb4256d1f863dfd9236da";
 var ws="http://ws.audioscrobbler.com/2.0/?";
-//var authurl = "http://www.last.fm/api/auth/?"; // +  api_key + "&token=" + token;
 var authurl = "http://www.last.fm/api/auth/?" + api_key;
 var secret = "4223f602d29d7db54db9250309a6f9a6";
 var sessionKey;
@@ -24,7 +23,7 @@ function innit()
         luserName = readCookie('username');
         sessionKey = readCookie('sessionKey');
         document.getElementById("parp")
-        .innerHTML=luserName + " all good bro, here's your charts<br><br>";
+        .innerHTML=luserName +  " all good dude, here's your charts<br><br>";
         showTopArtists(luserName)
     }
 
