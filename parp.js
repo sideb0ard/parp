@@ -22,8 +22,10 @@ function innit()
     if  (readCookie('username') && readCookie('sessionKey')) {
         luserName = readCookie('username');
         sessionKey = readCookie('sessionKey');
-        document.getElementById("parp")
-        .innerHTML=luserName +  " all good dude, here's your charts<br><br>";
+        //document.getElementById("content").append('<div id="sidebar"><div id="lastfmcharts" class="feature"></div><div id="songkickgigz" class="feature"></div></div><div id="main"><div id="videoz" class="feature"></div></div>');
+        $('#content').append('<div id="sidebar"><div id="lastfmcharts" class="feature"></div><div id="songkickgigz" class="feature"></div></div><div id="main"><div id="videoz" class="feature"></div></div>');
+        document.getElementById("lastfmcharts")
+        .innerHTML="Charts via Lastfm data<br>";
         showTopArtists(luserName)
     }
 
@@ -33,8 +35,8 @@ function innit()
     }
         
     else {
-        document.getElementById("parp")
-        .innerHTML="<input id=\"lusername\" onfocus=\"this.value=''\" value=\"Enter Lastfm UserName\"/></input><br/><br/><button id=\"parpbutton\" type=\"button\" onclick=\"authMeBaby()\">pARP</button>";  
+        document.getElementById("content")
+        .innerHTML="<input id=\"lusername\" onfocus=\"this.value=''\" value=\"Lastfm UserName\"/></input><br/><br/><button id=\"parpbutton\" type=\"button\" onclick=\"authMeBaby()\">pARP</button>";  
     }
 }
 

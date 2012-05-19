@@ -1,28 +1,36 @@
 div#container
 {
-    padding-top: 50px;
+    padding-top: 10px;
     margin-left: auto;
     margin-right: auto;
-    width: 780px; 
+    width: 920px; 
     background: #FFFFFF;
     margin: 0 auto; 
     solid #000000;
 }
 
+div#container
+{
+    text-align: center;
+}
 p {
     color: #00FF00;
 
 }
 
-body
+body,html
 {
-    text-align: center;
+    margin:0;
+    padding:0;
+    text-align: left;
+    font-family: "Trebuchet MS", verdana, sans-serif;
+    font-size:120%;
 }
 
 
 #lusername
 {
-    width: 690px; 
+    width: 900px; 
     height: 100px; 
     solid #999999; 
     padding: 5px; 
@@ -36,28 +44,54 @@ body
     font-size:150%;
     text-align: center;
 }
+#parp
+{
+    margin-left:5px;    
+}
 
-    .chart {
-      margin-left: 42px;
-      font: 10px sans-serif;
-      shape-rendering: crispEdges;
-      color: white;
-    }
+.chart {
+    font: 13px sans-serif;
+    shape-rendering: crispEdges;
+    color: white;
+}
 
-    .chart div {
-      background-color: steelblue;
-      text-align: right;
-      padding: 3px;
-      margin: 1px;
-      color: white;
-    }
+.chart div {
+    background-color: steelblue;
+    text-align: left;
+    padding: 3px;
+    margin: 1px;
+    color: white;
+}
 
-    .chart rect {
-      stroke: white;
-      fill: steelblue;
-      color: white;
-    }
+.chart rect {
+    stroke: white;
+    fill: steelblue;
+    color: white;
+}
 
-    .chart text.bar {
-      fill: white;
-    }
+.chart text.bar {
+    fill: white;
+}
+
+#header {
+    background:#ddd;
+}
+#nav {
+    background:#c99;
+}
+#footer {
+    background:#cc9;
+    clear:both;
+}
+#main {
+    margin: 5px;
+    float:right;
+    width:590px;
+    background:#9c9;
+}
+#sidebar {
+    margin: 5px;
+    float:left;
+    width:310px;
+    background:#c9c;
+}
